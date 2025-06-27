@@ -30,7 +30,7 @@
 <div id="onlineCount">Online: 0</div>
 <script>
     const onlineCountElement = document.getElementById('onlineCount');
-    const ws = new WebSocket('wss://itana.pw:6006'); // Corrected: Direct connection to itana.pw:6006
+    const ws = new WebSocket('wss://itana.pw:6006');
 
     ws.onopen = () => {
         console.log("Connected to WebSocket server");
@@ -39,14 +39,20 @@
     ws.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            if (data.type === 'online') {
-                onlineCountElement.textContent = 'Online: ' + data.count;
+
+            if (data && data.type === 'online') { // **Улучшение: Проверка наличия data**
+                const onlineCount = parseInt(data.count, 10); // **Улучшение: Преобразование в число**
+                if (!isNaN(onlineCount)) { // **Улучшение: Проверка, что это число**
+                    onlineCountElement.textContent = 'Online: ' + onlineCount;
+                } else {
+                    console.warn("Invalid online count received:", data.count); // **Улучшение: Предупреждение о некорректных данных**
+                }
             } else {
-                console.log("Received message:", data); // Handle other messages
+                console.log("Received message:", data);
             }
         } catch (error) {
             console.error("Error parsing message:", error);
-            console.log("Raw message:", event.data); // Log the raw message for debugging
+            console.log("Raw message:", event.data);
         }
     };
 
@@ -56,7 +62,17 @@
 
     ws.onerror = (error) => {
         console.error("WebSocket error:", error);
+        // **Улучшение:  Попытка переподключения**
+        console.log("Attempting to reconnect in 5 seconds...");
+        setTimeout(() => {
+            ws = new WebSocket('wss://itana.pw:6006'); // Создаем новый объект WebSocket
+        }, 5000);
     };
+
+    // **Улучшение: Обработчик ухода со страницы**
+    window.addEventListener('beforeunload', () => {
+        ws.close();
+    });
 </script>
 
   <iframe src="https://agartime.ru"></iframe>
