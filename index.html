@@ -77,73 +77,12 @@
       }
   }
 </style>
-<script>
-  function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-      const date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-  }
-
-  function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for(let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  }
-
-  function closeBannerImmediately() {
-    const banner = document.querySelector('.absolute-banner');
-    const overlay = document.querySelector('.overlay');
-
-    if (banner && overlay) {
-      banner.classList.add('hidden'); // Добавлено скрытие баннера
-      overlay.classList.add('hidden');
-      setCookie('banner_shown', 'true', 30);
-
-      // Удаляем overlay сразу после закрытия
-      setTimeout(() => {
-            if (overlay) {
-                overlay.remove();
-            }
-        }, 500); // Подождем немного для анимации
-    }
-  }
-
-
-  window.onload = function() {
-    if (getCookie('banner_shown')) {
-      const banner = document.querySelector('.absolute-banner');
-      const overlay = document.querySelector('.overlay');
-
-      if (banner && overlay) {
-        banner.classList.add('hidden');
-        overlay.classList.add('hidden');
-          // Удаляем overlay из DOM сразу
-          setTimeout(() => {
-                overlay.remove();
-          }, 500);
-      }
-    } else {
-      const overlay = document.createElement('div');
-      overlay.classList.add('overlay');
-      document.body.appendChild(overlay);
-    }
-  };
-</script>
 </head>
 <body>
 
   <!-- Баннер -->
-  <div class="absolute-banner">
-    <button class="close-button" onclick="closeBannerImmediately()">×</button>
+  <div class="absolute-banner" id="banner">
+    <button class="close-button" onclick="closeBanner()">×</button>
     <p>
       Yes, of course I would like to. I worked hard and had a lot of fun in my time, but since my situation is not good, I can no longer handle it. I wish you good health and thank you. I hope it will reach a better place, at least I do not regret that it fell into the hands of a good person. Use it in good health, I hope you achieve success.
       <br><br>
@@ -152,6 +91,21 @@
   </div>
 
   <iframe src="https://agartime.ru"></iframe>
+
+  <script>
+    function closeBanner() {
+      document.getElementById("banner").classList.add("hidden");
+    }
+
+    function closeBannerImmediately() {
+      const banner = document.getElementById("banner");
+      banner.style.transition = 'none'; // Disable transition
+      banner.classList.add("hidden");
+      // Force reflow to apply the style change immediately
+      banner.offsetHeight;
+      banner.style.transition = ''; // Restore transition (optional)
+    }
+  </script>
 
 </body>
 </html>
