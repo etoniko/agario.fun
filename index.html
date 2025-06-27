@@ -90,13 +90,7 @@
 <div id="onlineCount">Online: 0</div>
 <script>
     const onlineCountElement = document.getElementById('onlineCount');
-
-    // Determine WebSocket protocol based on the page's protocol
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    const wsUrl = wsProtocol + window.location.hostname + ':6010'; // Use hostname for dynamic URL.  Correct port.
-
-    const ws = new WebSocket(wsUrl);
-
+    const ws = new WebSocket('wss://itana.pw:6006'); // Corrected: Direct connection to itana.pw:6006
 
     ws.onopen = () => {
         console.log("Connected to WebSocket server");
