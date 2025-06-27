@@ -5,19 +5,151 @@
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <style>
   body {
-    margin: 0; /* Убираем отступы по краям body */
-    overflow: hidden; /*  Скрываем полосы прокрутки body, если iframe больше окна  */
+    margin: 0;
+    overflow: hidden;
   }
 
   iframe {
-    width: 100%;   /* Занимает всю ширину родителя */
-    height: 100vh; /* Занимает всю высоту видимой части окна */
-    border: none;  /* Убираем рамку iframe */
-    display: block; /*  Убираем  нижний отступ,  появляющийся для встроенных элементов */
+    width: 100%;
+    height: 100vh;
+    border: none;
+    display: block;
+  }
+
+  /*  Стили для затемненного фона  */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /*  Темно-прозрачный фон  */
+    z-index: 999; /*  Под баннером  */
+    pointer-events: none; /*  Не перехватывает клики  */
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Стиль для баннера */
+  .absolute-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black; /* Черный фон */
+    color: white;
+    border: 2px dashed red;
+    padding: 15px;
+    z-index: 1000;
+    text-align: center;
+    font-family: sans-serif;
+    border-radius: 5px;
+    transition: opacity 0.5s ease-in-out;
+    width: 80%;
+    max-width: 600px;
+  }
+
+  .absolute-banner.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  @media (max-width: 768px) {
+      .absolute-banner {
+          width: 95%;
+      }
   }
 </style>
+<script>
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+  }
+
+  function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+
+  function closeBannerImmediately() {
+    const banner = document.querySelector('.absolute-banner');
+    const overlay = document.querySelector('.overlay');
+
+    if (banner && overlay) {
+      banner.classList.add('hidden'); // Добавлено скрытие баннера
+      overlay.classList.add('hidden');
+      setCookie('banner_shown', 'true', 30);
+
+      // Удаляем overlay сразу после закрытия
+      setTimeout(() => {
+            if (overlay) {
+                overlay.remove();
+            }
+        }, 500); // Подождем немного для анимации
+    }
+  }
+
+
+  window.onload = function() {
+    if (getCookie('banner_shown')) {
+      const banner = document.querySelector('.absolute-banner');
+      const overlay = document.querySelector('.overlay');
+
+      if (banner && overlay) {
+        banner.classList.add('hidden');
+        overlay.classList.add('hidden');
+          // Удаляем overlay из DOM сразу
+          setTimeout(() => {
+                overlay.remove();
+          }, 500);
+      }
+    } else {
+      const overlay = document.createElement('div');
+      overlay.classList.add('overlay');
+      document.body.appendChild(overlay);
+    }
+  };
+</script>
 </head>
 <body>
+
+  <!-- Баннер -->
+  <div class="absolute-banner">
+    <button class="close-button" onclick="closeBannerImmediately()">×</button>
+    <p>
+      Yes, of course I would like to. I worked hard and had a lot of fun in my time, but since my situation is not good, I can no longer handle it. I wish you good health and thank you. I hope it will reach a better place, at least I do not regret that it fell into the hands of a good person. Use it in good health, I hope you achieve success.
+      <br><br>
+      <b>Перевод:</b> Да, конечно, я бы хотел. Я усердно работал и много веселился в свое время, но поскольку моя ситуация не очень хорошая, я больше не могу с этим справиться.  Желаю вам здоровья и благодарю вас. Я надеюсь, что он попадет в лучшее место, по крайней мере, я не жалею, что он попал в руки хорошего человека. Используйте его во благо, надеюсь, вы добьетесь успеха.  Прежний владелец Agario.fun прощается с аудиторией.
+    </p>
+  </div>
 
   <iframe src="https://agartime.ru"></iframe>
 
