@@ -70,7 +70,15 @@
     padding: 0;
     line-height: 1;
   }
-
+        #onlineCount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.7); /* Optional: Add background for readability */
+            padding: 5px;
+            border-radius: 5px; /* Optional: Rounded corners */
+            font-family: sans-serif;
+        }
   @media (max-width: 768px) {
       .absolute-banner {
           width: 95%;
@@ -79,7 +87,43 @@
 </style>
 </head>
 <body>
+<div id="onlineCount">Online: 0</div>
+<script>
+    const onlineCountElement = document.getElementById('onlineCount');
 
+    // Determine WebSocket protocol based on the page's protocol
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const wsUrl = wsProtocol + window.location.hostname + ':6010'; // Use hostname for dynamic URL.  Correct port.
+
+    const ws = new WebSocket(wsUrl);
+
+
+    ws.onopen = () => {
+        console.log("Connected to WebSocket server");
+    };
+
+    ws.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'online') {
+                onlineCountElement.textContent = 'Online: ' + data.count;
+            } else {
+                console.log("Received message:", data); // Handle other messages
+            }
+        } catch (error) {
+            console.error("Error parsing message:", error);
+            console.log("Raw message:", event.data); // Log the raw message for debugging
+        }
+    };
+
+    ws.onclose = () => {
+        console.log("Disconnected from WebSocket server");
+    };
+
+    ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+    };
+</script>
   <!-- Баннер -->
   <div class="absolute-banner" id="banner">
     <button class="close-button" onclick="closeBanner()">×</button>
