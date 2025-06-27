@@ -93,16 +93,12 @@
   <iframe src="https://agartime.ru"></iframe>
 
   <script>
-    function setCookie(name, value, days) {
-      let expires = "";
-      if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-      }
-      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    // Функция для установки cookie
+    function setCookie(name, value) {
+      document.cookie = name + "=" + (value || "") + "; path=/; max-age=" + (365 * 24 * 60 * 60); // Срок действия - 1 год
     }
 
+    // Функция для получения значения cookie
     function getCookie(name) {
       const nameEQ = name + "=";
       const ca = document.cookie.split(';');
@@ -114,25 +110,31 @@
       return null;
     }
 
+    // Функция для закрытия баннера
     function closeBanner() {
       document.getElementById("banner").classList.add("hidden");
-      setCookie("bannerClosed", "true", 7); // Set cookie, banner will be hidden for 7 days
+      setCookie("bannerClosed", "true"); // Устанавливаем cookie, баннер больше не будет показываться
     }
 
+    // Функция для мгновенного закрытия баннера (без анимации)
     function closeBannerImmediately() {
       const banner = document.getElementById("banner");
-      banner.style.transition = 'none'; // Disable transition
+      banner.style.transition = 'none'; // Отключаем анимацию
       banner.classList.add("hidden");
-      // Force reflow to apply the style change immediately
+      // Принудительное обновление стилей для немедленного применения
       banner.offsetHeight;
-      banner.style.transition = ''; // Restore transition (optional)
+      banner.style.transition = ''; // Возвращаем анимацию (необязательно)
     }
 
-    // Check if the banner has been closed before
+    // Проверяем, был ли баннер уже закрыт ранее
     const bannerClosed = getCookie("bannerClosed");
-    if (bannerClosed !== "true") {
-      // Show the banner if it hasn't been closed
-      document.getElementById("banner").classList.remove("hidden");
+    if (bannerClosed === null) {
+        // Если cookie нет, показываем баннер и сразу же ставим cookie, чтобы больше не показывать
+        document.getElementById("banner").classList.remove("hidden");
+        setCookie("bannerClosed", "false"); // Ставим cookie, чтобы в будущем не показывать (значение false, так как баннер показывается)
+    } else {
+        // Если cookie есть, скрываем баннер
+        document.getElementById("banner").classList.add("hidden");
     }
   </script>
 
