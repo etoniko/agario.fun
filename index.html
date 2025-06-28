@@ -26,74 +26,11 @@
     margin: 0;
     overflow: hidden;
   }
-
-  iframe {
-    width: 100%;
-    height: 100vh;
-    border: none;
-    display: block;
-  }
-        #onlineCount {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(255, 255, 255, 0.7); /* Optional: Add background for readability */
-            padding: 5px;
-            border-radius: 5px; /* Optional: Rounded corners */
-            font-family: sans-serif;
-        }
 </style>
 </head>
 <body>
-<div id="onlineCount">Online: 0</div>
 <script>
-    const onlineCountElement = document.getElementById('onlineCount');
-    const ws = new WebSocket('wss://itana.pw:6006');
-
-    ws.onopen = () => {
-        console.log("Connected to WebSocket server");
-    };
-
-    ws.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
-
-            if (data && data.type === 'online') { // **Улучшение: Проверка наличия data**
-                const onlineCount = parseInt(data.count, 10); // **Улучшение: Преобразование в число**
-                if (!isNaN(onlineCount)) { // **Улучшение: Проверка, что это число**
-                    onlineCountElement.textContent = 'Online: ' + onlineCount;
-                } else {
-                    console.warn("Invalid online count received:", data.count); // **Улучшение: Предупреждение о некорректных данных**
-                }
-            } else {
-                console.log("Received message:", data);
-            }
-        } catch (error) {
-            console.error("Error parsing message:", error);
-            console.log("Raw message:", event.data);
-        }
-    };
-
-    ws.onclose = () => {
-        console.log("Disconnected from WebSocket server");
-    };
-
-    ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        // **Улучшение:  Попытка переподключения**
-        console.log("Attempting to reconnect in 5 seconds...");
-        setTimeout(() => {
-            ws = new WebSocket('wss://itana.pw:6006'); // Создаем новый объект WebSocket
-        }, 5000);
-    };
-
-    // **Улучшение: Обработчик ухода со страницы**
-    window.addEventListener('beforeunload', () => {
-        ws.close();
-    });
+    window.location.replace("https://agar.su");
 </script>
-
-  <iframe src="https://agartime.ru"></iframe>
-
 </body>
 </html>
